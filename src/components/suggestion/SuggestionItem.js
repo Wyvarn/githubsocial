@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 /**
  * SuggestionItem stateless component
+ * This is a single suggestion item from Github API
  */
 const SuggestionItem = ({suggestionPos}) => {
     return (
