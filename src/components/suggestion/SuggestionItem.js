@@ -23,11 +23,16 @@ import PropTypes from 'prop-types';
  * type : "User"
  * url : "https://api.github.com/users/mojombo"
  */
-const SuggestionItem = ({suggestionPos, closeBtnHandler}) => {
+const SuggestionItem = ({
+                            avatar_url, events_url, followers_url, following_url, gists_url,
+                            gravatar_id, html_url, id, login, organizations_url,
+                            received_events_url, repos_url, site_admin, starred_url,
+                            subscriptions_url, type, url, suggestionPos, closeBtnHandler
+                        }) => {
     return (
-        <li className={"suggestion" + suggestionPos}>
-            <img alt=""/>
-            <a href="#" target="_blank" className="username">this will not be displayed</a>
+        <li className={"suggestion "+suggestionPos}>
+            <img alt="" src={avatar_url}/>
+            <a href="#" target="_blank" className="username">{login}</a>
             <a href="#" className={"close close" + suggestionPos}
                onClick={closeBtnHandler}>x</a>
         </li>

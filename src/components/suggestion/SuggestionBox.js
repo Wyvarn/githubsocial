@@ -6,7 +6,7 @@
 import React, {Component} from 'react';
 import SuggestionItem from './SuggestionItem';
 import Rx from 'rxjs/Rx';
-import { GITHUB_API_URL, GITHUB_API_USERS_URL_}from '../../constants/constants'
+import {GITHUB_API_URL, GITHUB_API_USERS_URL_}from '../../constants/constants'
 import $ from 'jquery';
 
 export default class SuggestionBox extends Component {
@@ -16,14 +16,13 @@ export default class SuggestionBox extends Component {
         this.state = {
             responseObservable: undefined,
             refreshObservable: undefined,
-            githubUsers : []
+            githubUsers: []
         };
 
         this._onRefreshSuggestions = this._onRefreshSuggestions.bind(this);
         this._createSuggestionObservable = this._createSuggestionObservable.bind(this);
         this._closeButtonHandler = this._closeButtonHandler.bind(this);
         this._renderSuggestion = this._renderSuggestion.bind(this);
-        this._createSuggestions = this._createSuggestions.bind(this);
     }
 
 
@@ -100,54 +99,48 @@ export default class SuggestionBox extends Component {
         }
     }
 
-    /**
-     * perform network request to update suggestions to the DOM
-     * This will be used to update suggestions on every mount
-     * */
-    componentDidMount(){
+    componentDidMount() {
         let requestObservable = Rx.Observable.of(GITHUB_API_USERS_URL_);
         let responseObservable = requestObservable.flatMap((requestUrl) => {
             return Rx.Observable.fromPromise($.getJSON(requestUrl));
         });
 
         // now we can render to DOM
-        responseObservable.subscribe((response) => {
-            this._createSuggestions(response);
-        })
-    }
-
-    /**
-     * This will be used to create suggestions from the API, will take in a github User object
-     * and render to DOM.
-     * This will populate the github users array in the state of this component
-     * @param {Object} githubUserList
-     * */
-    _createSuggestions(githubUserList){
-
-        console.log(githubUserList);
+        responseObservable.subscribe((githubUsers) => {
+            let githubUsersArr = githubUsers.map((githubUser, index) => {
+                return <SuggestionItem
+                    key={index}
+                    avatar_url={githubUser.avatar_url} events_url={githubUser.events_url}
+                    followers_url={githubUser.followers_url}
+                    following_url={githubUser.following_url} gists_url={githubUser.gists_url}
+                    gravatar_id={githubUser.gravatar_id}
+                    html_url={githubUser.html_url} id={githubUser.id}
+                    login={githubUser.login} organizations_url={githubUser.organizations_url}
+                    received_events_url={githubUser.received_events_url}
+                    repos_url={githubUser.repos_url} site_admin={githubUser.site_admin}
+                    starred_url={githubUser.starred_url}
+                    subscriptions_url={githubUser.subscriptions_url}
+                    type={githubUser.type} url={githubUser.url} suggestionPos={index}
+                    closeBtnHandler={this._closeButtonHandler}/>
+            });
+            this.setState({githubUsers: githubUsersArr})
+        });
     }
 
     render() {
-        const suggestions = [];
-        for (let n = 1; n < 4; n++) {
-            suggestions.push(<SuggestionItem key={n}
-                                             suggestionPos={n}
-                                             closeBtnHandler={this._closeButtonHandler}/>)
-        }
+
         return (
             <div className="container">
                 <div className="header">
                     <h2>Who to follow</h2>
-                    <a href="#" className="refresh" onClick={this._onRefreshSuggestions}>Refresh</a>
+                    <a href="#" className="refresh"
+                       onClick={this._onRefreshSuggestions}>Refresh</a>
                 </div>
+
                 <ul className="suggestions">
-                    {suggestions}
+                    {this.state.githubUsers}
                 </ul>
             </div>
         );
     }
 }
-
-// SuggestionBox.propTypes = {
-//     myProps: PropTypes.string.isRequired
-// };
