@@ -1,6 +1,10 @@
 /**
  * @author lusinabrian on 10/08/17.
  * @notes: Suggestion Box that will contain all suggestions from Github API
+ * ref => https://gist.github.com/staltz/868e7e9bc2a7b8c1f754
+ * ref => http://jsfiddle.net/staltz/8jFJH/48/
+ * ref => https://github.com/reactivex/rxjs
+ * https://github.com/Reactive-Extensions/RxJS
  */
 
 import React, {Component} from 'react';
@@ -44,7 +48,7 @@ export default class SuggestionBox extends Component {
         let responseObservable = requestObservable.flatMap((requestUrl) => {
             return Rx.Observable.fromPromise($.getJSON(requestUrl))
         });
-        
+
         this.setState({refreshObservable, responseObservable});
     }
 
