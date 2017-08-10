@@ -41,6 +41,10 @@ export default class SuggestionBox extends Component {
     }
 
     render() {
+        const suggestions = [];
+        for(let n = 1; n < 4; n++) {
+            suggestions.push(<SuggestionItem suggestionPos={n}/>)
+        }
         return (
             <div className="container">
                 <div className="header">
@@ -48,17 +52,7 @@ export default class SuggestionBox extends Component {
                     <a href="#" className="refresh" onClick={this._onRefreshSuggestions}>Refresh</a>
                 </div>
                 <ul className="suggestions">
-                    <SuggestionItem suggestionPos={1}/>
-                    <li className="suggestion2">
-                        <img />
-                        <a href="#" target="_blank" className="username">neither this</a>
-                        <a href="#" className="close close2">x</a>
-                    </li>
-                    <li className="suggestion3">
-                        <img />
-                        <a href="#" target="_blank" className="username">nor this</a>
-                        <a href="#" className="close close3">x</a>
-                    </li>
+                    {suggestions}
                 </ul>
             </div>
         );
