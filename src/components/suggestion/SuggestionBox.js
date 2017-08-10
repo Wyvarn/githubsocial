@@ -8,14 +8,19 @@ import PropTypes from 'prop-types';
 import SuggestionItem from './SuggestionItem';
 import Rx from 'rxjs/Rx';
 import {GITHUB_API_URL}from '../../constants/constants'
+import $ from 'jquery';
 
 export default class SuggestionBox extends Component {
     constructor(props, context) {
         super(props, context);
 
-        this.state = {};
+        this.state = {
+            responseObservable : {},
+            refreshObservable : {}
+        };
 
-        this._onRefreshSuggestions = this._onRefreshSuggestions.bind(this)
+        this._onRefreshSuggestions = this._onRefreshSuggestions.bind(this);
+        this._createSuggestionObservable = this._createSuggestionObservable.bind(this);
     }
 
     /**
@@ -32,12 +37,26 @@ export default class SuggestionBox extends Component {
                 return GITHUB_API_URL + randomOffset
             });
 
-        console.log(requestObservable);
-
         // response observable
         let responseObservable = requestObservable.flatMap((requestUrl) => {
-            return Rx.Observable.fromPromise()
+            return Rx.Observable.fromPromise($.getJSON(requestUrl))
         });
+
+        this.setState({refreshObservable, responseObservable});
+    }
+
+    /**
+     * Creates a suggestion list from the responseObservable we get
+     * */
+    _createSuggestionObservable(closeClickObservable){
+        return closeClickObservable.startWith("startup click")
+            .combineLatest(this.state.responseObservable, (click, listUsers) => {
+                return listUsers[Math.floor(Math.random()*listUsers.length)];
+            }).merge(
+                this.state.refreshObservable.map(
+                    () => {return null}
+                )
+            ).startWith(null);
     }
 
     render() {
