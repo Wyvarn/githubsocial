@@ -33,8 +33,8 @@ const SuggestionItem = ({
         <li className={"suggestion "+suggestionPos}>
             <img alt="" src={avatar_url}/>
             <a href="#" target="_blank" className="username">{login}</a>
-            <a href="#" className={"close close" + suggestionPos}
-               onClick={closeBtnHandler}>x</a>
+            <button href="#" className={"close close" + suggestionPos}
+               onClick={closeBtnHandler}>x</button>
         </li>
     );
 };

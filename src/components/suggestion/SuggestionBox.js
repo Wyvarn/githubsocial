@@ -44,7 +44,7 @@ export default class SuggestionBox extends Component {
         let responseObservable = requestObservable.flatMap((requestUrl) => {
             return Rx.Observable.fromPromise($.getJSON(requestUrl))
         });
-
+        
         this.setState({refreshObservable, responseObservable});
     }
 
@@ -99,6 +99,9 @@ export default class SuggestionBox extends Component {
         }
     }
 
+    /**
+     * Will update the state with github users
+     * */
     componentDidMount() {
         let requestObservable = Rx.Observable.of(GITHUB_API_USERS_URL_);
         let responseObservable = requestObservable.flatMap((requestUrl) => {
