@@ -7,10 +7,10 @@ import SuggestionItem from './SuggestionItem';
  */
 const SuggestionBox = ({}) => {
     return (
-
         <div className="container">
             <div className="header">
-                <h2>Who to follow</h2><a href="#" className="refresh">Refresh</a>
+                <h2>Who to follow</h2>
+                <a href="#" className="refresh">Refresh</a>
             </div>
             <ul className="suggestions">
                 <SuggestionItem suggestionPos={1}/>

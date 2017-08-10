@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import logo from '../images/svg/logo.svg';
-import SuggestionBox from './SuggestionBox';
+import SuggestionBox from './suggestion/SuggestionBox';
 
 class App extends Component {
     render() {
