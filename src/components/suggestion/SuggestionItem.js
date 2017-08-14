@@ -30,10 +30,10 @@ const SuggestionItem = ({
                             subscriptions_url, type, url, suggestionPos, closeBtnHandler
                         }) => {
     return (
-        <li className={"suggestion "+suggestionPos}>
-            <img alt="" src={avatar_url}/>
-            <a href="#" target="_blank" className="username">{login}</a>
-            <button href="#" className={"close close" + suggestionPos}
+        <li className={"suggestion"+suggestionPos}>
+            <img alt={login} src={avatar_url}/>
+            <a href={html_url} target="_blank" className="username">{login}</a>
+            <button className={"close close" + suggestionPos}
                onClick={closeBtnHandler}>x</button>
         </li>
     );

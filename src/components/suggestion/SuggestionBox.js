@@ -10,7 +10,7 @@
 import React, {Component} from 'react';
 import SuggestionItem from './SuggestionItem';
 import Rx from 'rxjs/Rx';
-import {GITHUB_API_URL, GITHUB_API_USERS_URL_}from '../../constants/constants'
+import {GITHUB_API_URL_WITH_OFFSET, GITHUB_API_USERS_URL}from '../../constants/constants'
 import $ from 'jquery';
 
 export default class SuggestionBox extends Component {
@@ -23,25 +23,27 @@ export default class SuggestionBox extends Component {
             githubUsers: []
         };
 
-        this._onRefreshSuggestions = this._onRefreshSuggestions.bind(this);
-        this._createSuggestionObservable = this._createSuggestionObservable.bind(this);
         this._closeButtonHandler = this._closeButtonHandler.bind(this);
         this._renderSuggestion = this._renderSuggestion.bind(this);
+        this._createOrRefreshObservables = this._createOrRefreshObservables.bind(this)
     }
 
-
     /**
-     * Callback to refresh suggestions from Github
+     * Creates observables refresh and response observables for use
      * */
-    _onRefreshSuggestions(event) {
-        event.preventDefault();
-        let refreshObservable = Rx.Observable.fromEvent(event, "click");
+    _createOrRefreshObservables(event) {
+        let refreshObservable;
+        if (event !== undefined) {
+            refreshObservable = Rx.Observable.fromEvent(event, "click");
+        } else {
+            refreshObservable = Rx.Observable.of(GITHUB_API_USERS_URL);
+        }
 
         // request observable that will get a random offset from github api
         let requestObservable = refreshObservable.startWith("startup click")
             .map(() => {
                 let randomOffset = Math.floor(Math.random() * 500);
-                return GITHUB_API_URL + randomOffset
+                return GITHUB_API_URL_WITH_OFFSET + randomOffset
             });
 
         // response observable
@@ -52,35 +54,36 @@ export default class SuggestionBox extends Component {
         this.setState({refreshObservable, responseObservable});
     }
 
+
     /**
      * Callback that will be passed down to each close button for suggestions
      * @param {Object} event
      * */
     _closeButtonHandler(event) {
         event.preventDefault();
+        let target = event.target.parentNode;
+        let selector = target.classList[0];
+
         let closeObservable = Rx.Observable.fromEvent(event, "click");
-        let suggestedObservable = this._createSuggestionObservable(closeObservable);
-
-        suggestedObservable.subscribe((suggestedUser) => {
-            this._renderSuggestion(suggestedUser, ".suggestion1")
-        })
-    }
-
-    /**
-     * Creates a suggestion list from the responseObservable we get
-     * This will return a suggestion observable
-     * */
-    _createSuggestionObservable(closeClickObservable) {
-        return closeClickObservable.startWith("startup click")
+        let suggestedObservable = closeObservable.startWith("startup click")
             .combineLatest(this.state.responseObservable, (click, listUsers) => {
                 return listUsers[Math.floor(Math.random() * listUsers.length)];
             }).merge(
                 this.state.refreshObservable.map(
                     () => {
                         return null
-                    }
-                )
+                    })
             ).startWith(null);
+
+        //console.log(suggestedObservable);
+        suggestedObservable.subscribe((suggestedUser) => {
+            console.log(suggestedUser);
+            console.log("in observable")
+        })
+        // suggestedObservable.subscribe((suggestedUser) => {
+        //     console.log(suggestedUser);
+        //     //this._renderSuggestion(suggestedUser, selector)
+        // })
     }
 
     /**
@@ -107,7 +110,7 @@ export default class SuggestionBox extends Component {
      * Will update the state with github users
      * */
     componentDidMount() {
-        let requestObservable = Rx.Observable.of(GITHUB_API_USERS_URL_);
+        let requestObservable = Rx.Observable.of(GITHUB_API_USERS_URL);
         let responseObservable = requestObservable.flatMap((requestUrl) => {
             return Rx.Observable.fromPromise($.getJSON(requestUrl));
         });
@@ -132,6 +135,8 @@ export default class SuggestionBox extends Component {
             });
             this.setState({githubUsers: githubUsersArr})
         });
+
+        this._createOrRefreshObservables()
     }
 
     render() {
@@ -141,7 +146,7 @@ export default class SuggestionBox extends Component {
                 <div className="header">
                     <h2>Who to follow</h2>
                     <a href="#" className="refresh"
-                       onClick={this._onRefreshSuggestions}>Refresh</a>
+                       onClick={this._createOrRefreshObservables}>Refresh</a>
                 </div>
 
                 <ul className="suggestions">
