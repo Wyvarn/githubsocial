@@ -9,7 +9,7 @@
     "react": "^15.6.2",
     "react-dom": "^15.6.2",
     "rxjs": "^5.5.12",
-    "react-scripts": "3.4.1",
+    "react-scripts": "3.4.3",
     "snyk": "^1.370.1"
   },
   "scripts": {
